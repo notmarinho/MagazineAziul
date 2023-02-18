@@ -8,6 +8,7 @@ module.exports = {
 
     //Typescript
     '@typescript-eslint/no-unused-vars': 'warn',
+    'react-hooks/exhaustive-deps': 'off',
     '@typescript-eslint/consistent-type-imports': [
       'error',
       {
