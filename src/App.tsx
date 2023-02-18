@@ -2,7 +2,7 @@ import React from 'react';
 import {SafeAreaView} from 'react-native';
 
 import AuthContextProvider from './contexts/AuthContext';
-import Navigator from './navigations';
+import Navigator from './navigation';
 
 function App(): JSX.Element {
   return (

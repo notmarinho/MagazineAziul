@@ -1,14 +1,16 @@
+import type {FC} from 'react';
 import React, {useEffect, useState} from 'react';
-import {Button, FlatList, Text, View} from 'react-native';
+import {Button, FlatList, Pressable, Text, View} from 'react-native';
 
+import {useAuthContext} from '@contexts/AuthContext';
 import type Sale from '@models/Sale';
+import type {AuthenticatedScreenProps} from '@navigation/types';
 import {SalesService} from '@services/sales';
 
-import {useAuthContext} from '../../contexts/AuthContext';
 import styles from './styles';
 
-const Dashboard = () => {
-  const {logout} = useAuthContext();
+const Dashboard: FC<AuthenticatedScreenProps<'Dashboard'>> = ({navigation}) => {
+  const {logout, isSalesman} = useAuthContext();
 
   const [sales, setSales] = useState<Sale[]>([]);
 
@@ -25,8 +27,21 @@ const Dashboard = () => {
     <View style={styles.container}>
       <FlatList
         data={sales}
-        renderItem={({item}) => <Text>{item.sale_value}</Text>}
+        renderItem={({item}) => (
+          <Pressable
+            style={styles.card}
+            onPress={() => navigation.navigate('SaleDetails', item)}>
+            <Text>{item.sale_value}</Text>
+          </Pressable>
+        )}
       />
+      {isSalesman && (
+        <Button
+          onPress={() => navigation.navigate('InsertSale')}
+          title="Nova venda"
+        />
+      )}
+
       <Button onPress={logout} title="Sair" />
     </View>
   );

@@ -16,7 +16,7 @@ export interface GetSalesResponse {
 export interface InsertSaleParams {
   latitude: string;
   longitude: string;
-  sale_value: number;
+  sale_value: string;
 }
 
 export interface InsertSaleRoamingParams extends InsertSaleParams {
