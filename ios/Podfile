@@ -22,10 +22,15 @@ if linkage != nil
 end
 
 target 'MagazineAziul' do
+  # Permissions
   permissions_path = '../node_modules/react-native-permissions/ios'
   pod 'Permission-LocationAccuracy', :path => "#{permissions_path}/LocationAccuracy"
   pod 'Permission-LocationAlways', :path => "#{permissions_path}/LocationAlways"
   pod 'Permission-LocationWhenInUse', :path => "#{permissions_path}/LocationWhenInUse"
+
+  # WatermelonDB
+  pod 'React-jsi', :path => '../node_modules/react-native/ReactCommon/jsi', :modular_headers => true
+  pod 'simdjson', path: '../node_modules/@nozbe/simdjson'
 
   config = use_native_modules!
 

@@ -434,7 +434,11 @@ PODS:
   - RNScreens (3.20.0):
     - React-Core
     - React-RCTImage
+  - simdjson (1.0.0)
   - SocketRocket (0.6.0)
+  - WatermelonDB (0.25.5):
+    - React
+    - React-jsi
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -506,6 +510,8 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - "simdjson (from `../node_modules/@nozbe/simdjson`)"
+  - "WatermelonDB (from `../node_modules/@nozbe/watermelondb`)"
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -609,6 +615,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-permissions"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  simdjson:
+    :path: "../node_modules/@nozbe/simdjson"
+  WatermelonDB:
+    :path: "../node_modules/@nozbe/watermelondb"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -667,10 +677,12 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 8616bd5a58af409453ea4e1b246521bb76578d60
   RNPermissions: dcdb7b99796bbeda6975a6e79ad519c41b251b1c
   RNScreens: 218801c16a2782546d30bd2026bb625c0302d70f
+  simdjson: c96317b3a50dff3468a42f586ab7ed22c6ab2fd9
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
+  WatermelonDB: 6ae836b52d11281d87187ff2283480e44b111771
   Yoga: 5ed1699acbba8863755998a4245daa200ff3817b
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 55d1ca9868652b8ecc7da47f84730be00dd8ac67
+PODFILE CHECKSUM: d161d41dde2912f425b16fa3a994e4693e794561
 
 COCOAPODS: 1.11.3
