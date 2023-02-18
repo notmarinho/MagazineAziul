@@ -13,7 +13,6 @@ import {AuthService} from '@services/auth';
 import {Storage} from '@store/storage';
 
 import {useAuthContext} from '../../contexts/AuthContext';
-
 import styles from './styles';
 
 const Login = () => {

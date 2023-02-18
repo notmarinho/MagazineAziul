@@ -8,7 +8,6 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SplashScreen from '@screens/Splash/SplashScreen';
 
 import {useAuthContext} from '../contexts/AuthContext';
-
 import AuthenticatedStackNavigator from './AuthenticatedStack';
 import NonAuthenticatedStackNavigator from './NonAuthenticatedStack';
 

@@ -5,7 +5,6 @@ import type Sale from '@models/Sale';
 import {SalesService} from '@services/sales';
 
 import {useAuthContext} from '../../contexts/AuthContext';
-
 import styles from './styles';
 
 const Dashboard = () => {
