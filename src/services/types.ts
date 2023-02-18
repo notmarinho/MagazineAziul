@@ -22,3 +22,11 @@ export interface InsertSaleParams {
 export interface InsertSaleRoamingParams extends InsertSaleParams {
   roaming: number;
 }
+
+export interface GetSalesParams {
+  board?: string;
+  salesman?: string;
+  unit?: string;
+  start_date?: string;
+  end_date?: string;
+}

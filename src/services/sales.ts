@@ -2,14 +2,17 @@ import type Sale from '@models/Sale';
 
 import api from './api';
 import type {
+  GetSalesParams,
   GetSalesResponse,
   InsertSaleParams,
   InsertSaleRoamingParams,
 } from './types';
 
 export const SalesService = {
-  async getSales() {
-    const response = await api.get<GetSalesResponse>('/sales');
+  async getSales(filterParams: GetSalesParams = {}) {
+    const response = await api.get<GetSalesResponse>('/sales', {
+      params: filterParams,
+    });
     return response.data;
   },
   async getSaleDetail(saleId: string) {
