@@ -10,6 +10,7 @@ export type AuthenticatedStackParamList = {
   Dashboard: undefined;
   SaleDetails: Sale;
   InsertSale: undefined;
+  SalesMap: undefined;
 };
 
 export type NonAuthenticatedScreenProps<

@@ -2,27 +2,37 @@ import React from 'react';
 
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
+import {useAuthContext} from '@contexts/AuthContext';
 import DashboardScreen from '@screens/Dashboard/Dashboard';
 import InsertSaleScreen from '@screens/InsertSale/InsertSale';
 import SaleDetailsScreen from '@screens/SaleDetails/SaleDetails';
+import SalesMapScreen from '@screens/SalesMap/SalesMap';
 
 import type {AuthenticatedStackParamList} from './types';
 
 const AuthenticatedStack =
   createNativeStackNavigator<AuthenticatedStackParamList>();
 
-const AuthenticatedStackNavigator = () => (
-  <AuthenticatedStack.Navigator
-    screenOptions={{
-      headerShown: false,
-    }}>
-    <AuthenticatedStack.Screen name="Dashboard" component={DashboardScreen} />
-    <AuthenticatedStack.Screen
-      name="SaleDetails"
-      component={SaleDetailsScreen}
-    />
-    <AuthenticatedStack.Screen name="InsertSale" component={InsertSaleScreen} />
-  </AuthenticatedStack.Navigator>
-);
+const AuthenticatedStackNavigator = () => {
+  const {user, isSalesman} = useAuthContext();
+  return (
+    <AuthenticatedStack.Navigator
+      initialRouteName={isSalesman ? 'Dashboard' : 'SalesMap'}
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <AuthenticatedStack.Screen name="Dashboard" component={DashboardScreen} />
+      <AuthenticatedStack.Screen
+        name="SaleDetails"
+        component={SaleDetailsScreen}
+      />
+      <AuthenticatedStack.Screen
+        name="InsertSale"
+        component={InsertSaleScreen}
+      />
+      <AuthenticatedStack.Screen name="SalesMap" component={SalesMapScreen} />
+    </AuthenticatedStack.Navigator>
+  );
+};
 
 export default AuthenticatedStackNavigator;
