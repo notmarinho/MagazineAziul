@@ -1,6 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import {StorageData} from '@store/types';
+import database from '@store/watermelon';
 
 import axios from 'axios';
 
@@ -9,7 +8,7 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(async config => {
-  const token = await AsyncStorage.getItem(StorageData.token);
+  const token = await database.localStorage.get(StorageData.token);
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;

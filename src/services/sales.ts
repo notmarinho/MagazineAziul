@@ -20,7 +20,7 @@ export const SalesService = {
     return response.data;
   },
   async insertSale(saleParams: InsertSaleParams) {
-    const response = await api.post('/insert-sale', saleParams);
+    const response = await api.post<Sale>('/insert-sale', saleParams);
     return response.data;
   },
   async insertSaleRoaming(saleParams: InsertSaleRoamingParams) {
