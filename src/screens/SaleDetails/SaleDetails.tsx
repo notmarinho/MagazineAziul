@@ -1,6 +1,7 @@
 import type {FC} from 'react';
 import React from 'react';
-import {LogBox, Text, View} from 'react-native';
+import {Text, View} from 'react-native';
+import MapView, {Marker} from 'react-native-maps';
 
 import type {AuthenticatedScreenProps} from '@navigation/types';
 
@@ -8,11 +9,6 @@ import styles from './styles';
 
 const SaleDetails: FC<AuthenticatedScreenProps<'SaleDetails'>> = ({route}) => {
   const {longitude, latitude, synced} = route.params;
-
-  // @TEMPORALLY
-  LogBox.ignoreLogs([
-    'Non-serializable values were found in the navigation state',
-  ]);
 
   return (
     <View style={styles.container}>
@@ -26,6 +22,21 @@ const SaleDetails: FC<AuthenticatedScreenProps<'SaleDetails'>> = ({route}) => {
         }}>
         {synced ? 'Sincronizado' : 'Não sincronizado'}
       </Text>
+      <MapView
+        initialRegion={{
+          latitude: Number(latitude),
+          longitude: Number(longitude),
+          latitudeDelta: 1,
+          longitudeDelta: 1,
+        }}
+        style={styles.mapContainer}>
+        <Marker
+          coordinate={{
+            latitude: Number(latitude),
+            longitude: Number(longitude),
+          }}
+        />
+      </MapView>
     </View>
   );
 };

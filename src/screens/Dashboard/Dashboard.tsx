@@ -1,52 +1,14 @@
 import type {FC} from 'react';
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {Button, FlatList, Pressable, Text, View} from 'react-native';
 
-import NetInfo from '@react-native-community/netinfo';
-
-import {useAuthContext} from '@contexts/AuthContext';
-import type {SaleModel} from '@models/Sale';
 import type {AuthenticatedScreenProps} from '@navigation/types';
-import WMSalesActions from '@store/watermelon/action/SalesActions';
 
 import styles from './styles';
+import useDashboard from './useDashboard';
 
 const Dashboard: FC<AuthenticatedScreenProps<'Dashboard'>> = ({navigation}) => {
-  const {logout, isSalesman, user} = useAuthContext();
-
-  const [sales, setSales] = useState<SaleModel[]>([]);
-  const [shouldSync, setShouldSync] = useState(true);
-  const [hasInternet, setHasInternet] = useState(true);
-
-  const onLogout = () => {
-    WMSalesActions.removeSales();
-    logout();
-  };
-
-  useEffect(() => {
-    const observeSalesItems =
-      WMSalesActions.observerSales().subscribe(setSales);
-
-    const unsubscribeNetInfo = NetInfo.addEventListener(state =>
-      setHasInternet(!!state.isConnected),
-    );
-
-    return () => {
-      unsubscribeNetInfo();
-      observeSalesItems.unsubscribe();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (shouldSync && hasInternet) {
-      WMSalesActions.syncLocalSalesWithServer();
-      setShouldSync(false);
-    }
-
-    if (!hasInternet && !shouldSync) {
-      setShouldSync(true);
-    }
-  }, [hasInternet, shouldSync]);
+  const {sales, isSalesman, onLogout, user} = useDashboard();
 
   return (
     <View style={styles.container}>

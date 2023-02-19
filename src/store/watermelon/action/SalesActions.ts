@@ -80,13 +80,14 @@ const WMSalesActions = {
         throw new Error('Offline Mode');
       }
 
-      console.log('Sync Started 🔋');
+      console.log('Syncing 🔄');
       const apiSales = await SalesService.getSales().then(
         response => response.sales,
       );
 
       let localSales = await salesCollection.query().fetch();
 
+      // Checking if there are not synced sales
       const notSyncedSales = await salesCollection
         .query(Q.where('synced', false))
         .fetch();
@@ -127,12 +128,8 @@ const WMSalesActions = {
           console.log('New sales added to local database 📲'),
         );
       }
-
-      console.log('Sync Completed ✅');
     } catch (error: any) {
-      if (error.message === 'Offline Mode') {
-        console.log(`${error.message} 🚨`);
-      }
+      return Promise.reject(error);
     }
   },
 };
