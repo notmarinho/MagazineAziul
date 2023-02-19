@@ -2,26 +2,51 @@ import type {FC} from 'react';
 import React, {useEffect, useState} from 'react';
 import {Button, FlatList, Pressable, Text, View} from 'react-native';
 
+import NetInfo from '@react-native-community/netinfo';
+
 import {useAuthContext} from '@contexts/AuthContext';
-import type Sale from '@models/Sale';
+import type {SaleModel} from '@models/Sale';
 import type {AuthenticatedScreenProps} from '@navigation/types';
-import {SalesService} from '@services/sales';
+import WMSalesActions from '@store/watermelon/action/SalesActions';
 
 import styles from './styles';
 
 const Dashboard: FC<AuthenticatedScreenProps<'Dashboard'>> = ({navigation}) => {
-  const {logout, isSalesman} = useAuthContext();
+  const {logout, isSalesman, user} = useAuthContext();
 
-  const [sales, setSales] = useState<Sale[]>([]);
+  const [sales, setSales] = useState<SaleModel[]>([]);
+  const [shouldSync, setShouldSync] = useState(true);
+  const [hasInternet, setHasInternet] = useState(true);
 
-  const getUserSales = async () => {
-    const response = await SalesService.getSales();
-    setSales(response.sales);
+  const onLogout = () => {
+    WMSalesActions.removeSales();
+    logout();
   };
 
   useEffect(() => {
-    getUserSales();
+    const observeSalesItems =
+      WMSalesActions.observerSales().subscribe(setSales);
+
+    const unsubscribeNetInfo = NetInfo.addEventListener(state =>
+      setHasInternet(!!state.isConnected),
+    );
+
+    return () => {
+      unsubscribeNetInfo();
+      observeSalesItems.unsubscribe();
+    };
   }, []);
+
+  useEffect(() => {
+    if (shouldSync && hasInternet) {
+      WMSalesActions.syncLocalSalesWithServer();
+      setShouldSync(false);
+    }
+
+    if (!hasInternet && !shouldSync) {
+      setShouldSync(true);
+    }
+  }, [hasInternet, shouldSync]);
 
   return (
     <View style={styles.container}>
@@ -30,10 +55,12 @@ const Dashboard: FC<AuthenticatedScreenProps<'Dashboard'>> = ({navigation}) => {
         renderItem={({item}) => (
           <Pressable
             style={styles.card}
-            onPress={() => navigation.navigate('SaleDetails', item)}>
+            onPress={() => navigation.navigate('SaleDetails', item.getData())}>
             <Text>{item.sale_value}</Text>
           </Pressable>
         )}
+        ListEmptyComponent={() => <Text>Nenhuma venda encontrada</Text>}
+        ListHeaderComponent={() => <Text>{user?.name}</Text>}
       />
       {isSalesman && (
         <Button
@@ -42,7 +69,7 @@ const Dashboard: FC<AuthenticatedScreenProps<'Dashboard'>> = ({navigation}) => {
         />
       )}
 
-      <Button onPress={logout} title="Sair" />
+      <Button onPress={onLogout} title="Sair" />
     </View>
   );
 };

@@ -16,7 +16,7 @@ import {useAuthContext} from '../../contexts/AuthContext';
 import styles from './styles';
 
 const Login = () => {
-  const {setUser: setUserOnContext} = useAuthContext();
+  const {onUserSignIn: handleUserOnContext} = useAuthContext();
 
   const [email, setEmail] = useState('afonso.afancar@magazineaziul.com.br');
   const [password, setPassword] = useState('mudar123');
@@ -36,7 +36,7 @@ const Login = () => {
     AuthService.loginWithEmail(email, password)
       .then(response => Storage.setToken(response.access_token))
       .then(AuthService.getSignedUser)
-      .then(setUserOnContext)
+      .then(handleUserOnContext)
       .catch(error => console.log(error))
       .finally(() => setIsLoading(false));
   };
@@ -46,7 +46,7 @@ const Login = () => {
     AuthService.loginWithEmail(customEmail, password)
       .then(response => Storage.setToken(response.access_token))
       .then(AuthService.getSignedUser)
-      .then(setUserOnContext)
+      .then(handleUserOnContext)
       .catch(error => console.log(error))
       .finally(() => setIsLoading(false));
   };
