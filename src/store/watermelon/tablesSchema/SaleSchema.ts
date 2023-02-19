@@ -6,7 +6,7 @@ const SaleSchema = tableSchema({
     {name: 'sale_id', type: 'string'},
     {name: 'sale_value', type: 'number'},
     {name: 'salesman', type: 'string'},
-    {name: 'unit', type: 'string'},
+    {name: 'nearest_unit', type: 'string'},
     {name: 'board_salesman', type: 'string'},
     {name: 'latitude', type: 'string'},
     {name: 'longitude', type: 'string'},

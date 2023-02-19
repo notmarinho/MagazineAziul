@@ -2,6 +2,7 @@ import type {FC} from 'react';
 import React from 'react';
 import {
   ActivityIndicator,
+  Button,
   Text,
   TextInput,
   TouchableOpacity,
@@ -13,7 +14,9 @@ import type {AuthenticatedScreenProps} from '@navigation/types';
 import styles from './styles';
 import useInsertSale from './useInsertSale';
 
-const InsertSale: FC<AuthenticatedScreenProps<'InsertSale'>> = () => {
+const InsertSale: FC<AuthenticatedScreenProps<'InsertSale'>> = ({
+  navigation,
+}) => {
   const {
     handleAddSale,
     hasUserPosition,
@@ -34,6 +37,8 @@ const InsertSale: FC<AuthenticatedScreenProps<'InsertSale'>> = () => {
           placeholder="Sale value"
         />
       </View>
+
+      <Button title="Voltar" onPress={navigation.goBack} />
       <TouchableOpacity
         onPress={handleAddSale}
         style={hasUserPosition ? styles.button : styles.disabledButton}

@@ -1,18 +1,23 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 
 import NetInfo from '@react-native-community/netinfo';
 
 import {useAuthContext} from '@contexts/AuthContext';
+import type BottomSheet from '@gorhom/bottom-sheet';
 import type {SaleModel} from '@models/Sale';
+import type {FilterSalesParams} from '@services/types';
 import WMSalesActions from '@store/watermelon/action/SalesActions';
 
 const useDashboard = () => {
   const [sales, setSales] = useState<SaleModel[]>([]);
+  const [displaySales, setDisplaySales] = useState<SaleModel[]>([]);
   const [shouldSync, setShouldSync] = useState(true);
   const [hasInternet, setHasInternet] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
 
-  const {logout, isSalesman, user} = useAuthContext();
+  const bottomSheetRef = useRef<BottomSheet>(null);
+
+  const {logout, isSalesman, user, onUserMenu} = useAuthContext();
 
   const onLogout = () => {
     WMSalesActions.removeSales();
@@ -24,6 +29,7 @@ const useDashboard = () => {
     if (shouldSync && hasInternet) {
       setIsLoading(true);
       WMSalesActions.syncLocalSalesWithServer()
+        .then(response => onUserMenu(response.menu))
         .then(() => console.log('Synced! ✅'))
         .catch(error => console.log(`${error.message} 🚨`))
         .finally(() => {
@@ -38,9 +44,27 @@ const useDashboard = () => {
     }
   };
 
+  const onSalesChange = (sales: SaleModel[]) => {
+    setSales(sales);
+    setDisplaySales(sales);
+  };
+
+  const handleFilterSales = async (filterParams: FilterSalesParams) => {
+    bottomSheetRef.current?.close();
+    const hasNoFilter = Object.values(filterParams).every(
+      filter => filter === undefined,
+    );
+    if (hasNoFilter) {
+      setDisplaySales(sales);
+    } else {
+      const filteredSales = await WMSalesActions.filterSales(filterParams);
+      setDisplaySales(filteredSales);
+    }
+  };
+
   useEffect(() => {
     const observeSalesItems =
-      WMSalesActions.observerSales().subscribe(setSales);
+      WMSalesActions.observerSales().subscribe(onSalesChange);
 
     const unsubscribeNetInfo = NetInfo.addEventListener(state =>
       setHasInternet(!!state.isConnected),
@@ -57,11 +81,13 @@ const useDashboard = () => {
   }, [hasInternet, shouldSync]);
 
   return {
-    sales,
+    sales: displaySales,
     user,
     onLogout,
     isLoading,
     isSalesman,
+    bottomSheetRef,
+    handleFilterSales,
   };
 };
 

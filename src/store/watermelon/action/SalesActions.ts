@@ -2,6 +2,8 @@ import NetInfo from '@react-native-community/netinfo';
 
 import {Q} from '@nozbe/watermelondb';
 import {SalesService} from '@services/sales';
+import type {FilterSalesParams} from '@services/types';
+import {Storage} from '@store/storage';
 
 import type {SaleModel} from '../../../models/Sale';
 import type Sale from '../../../models/Sale';
@@ -11,13 +13,14 @@ const salesCollection = database.collections.get<SaleModel>('sales');
 
 const WMSalesActions = {
   async addSale(sale: Sale) {
+    console.log(sale);
     return database.write(
       async () =>
         await salesCollection.create(newItem => {
           newItem.sale_id = sale.sale_id;
           newItem.sale_value = sale.sale_value;
           newItem.salesman = sale.salesman;
-          newItem.unit = sale.unit;
+          newItem.nearest_unit = sale.nearest_unit;
           newItem.board_salesman = sale.board_salesman;
           newItem.latitude = sale.latitude;
           newItem.longitude = sale.longitude;
@@ -36,7 +39,7 @@ const WMSalesActions = {
             newItem.sale_id = sale.sale_id;
             newItem.sale_value = sale.sale_value;
             newItem.salesman = sale.salesman;
-            newItem.unit = sale.unit;
+            newItem.nearest_unit = sale.nearest_unit;
             newItem.board_salesman = sale.board_salesman;
             newItem.latitude = sale.latitude;
             newItem.longitude = sale.longitude;
@@ -53,6 +56,31 @@ const WMSalesActions = {
     const syncedSales = await salesCollection.query().fetch();
 
     return syncedSales;
+  },
+
+  async filterSales(filterParams: FilterSalesParams) {
+    let filteredSales = await salesCollection.query().fetch();
+
+    if (filterParams.board) {
+      filteredSales = filteredSales.filter(
+        sale => sale.board_salesman === filterParams.board,
+      );
+    }
+    if (filterParams.salesman) {
+      filteredSales = filteredSales.filter(
+        sale => sale.salesman === filterParams.salesman,
+      );
+    }
+
+    console.log(filterParams.unit);
+    console.log(filteredSales[0].getData());
+
+    if (filterParams.unit) {
+      filteredSales = filteredSales.filter(
+        sale => sale.nearest_unit === filterParams.unit,
+      );
+    }
+    return filteredSales;
   },
 
   observerSales() {
@@ -81,20 +109,16 @@ const WMSalesActions = {
       }
 
       console.log('Syncing 🔄');
-      const apiSales = await SalesService.getSales().then(
-        response => response.sales,
-      );
 
-      let localSales = await salesCollection.query().fetch();
+      let [apiSales, localSales, notSyncedSales] = await Promise.all([
+        SalesService.getSales(),
+        salesCollection.query().fetch(),
+        salesCollection.query(Q.where('synced', false)).fetch(),
+      ]);
 
-      // Checking if there are not synced sales
-      const notSyncedSales = await salesCollection
-        .query(Q.where('synced', false))
-        .fetch();
       const hasNotSyncedSales = notSyncedSales.length > 0;
 
       if (hasNotSyncedSales) {
-        console.log('Sync Local With Server 🚚');
         await Promise.all(
           notSyncedSales.map(async sale => {
             const saleData = await SalesService.insertSale(
@@ -104,7 +128,7 @@ const WMSalesActions = {
               await sale.update(saleItem => {
                 saleItem.sale_id = saleData.sale_id;
                 saleItem.synced = true;
-                saleItem.unit = saleData.unit;
+                saleItem.nearest_unit = saleData.nearest_unit;
                 saleItem.board_salesman = saleData.board_salesman;
                 saleItem.roaming = saleData.roaming;
                 saleItem.date_of_sale = saleData.date_of_sale;
@@ -117,7 +141,7 @@ const WMSalesActions = {
       }
 
       // Adding new sales from server to local database
-      const serverSales = apiSales.filter(
+      const serverSales = apiSales.sales.filter(
         apiSale =>
           !localSales.find(localSale => localSale.sale_id === apiSale.sale_id),
       );
@@ -125,9 +149,11 @@ const WMSalesActions = {
 
       if (hasNewSales) {
         await this.addServeSales(serverSales).then(() =>
-          console.log('New sales added to local database 📲'),
+          console.log('New sales 📲'),
         );
       }
+
+      return apiSales;
     } catch (error: any) {
       return Promise.reject(error);
     }

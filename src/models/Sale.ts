@@ -7,7 +7,7 @@ type Sale = {
   latitude: string;
   sale_value: number;
   salesman?: string;
-  unit?: string;
+  nearest_unit?: string;
   board_salesman?: string;
   roaming?: number;
   date_of_sale?: string;
@@ -23,7 +23,7 @@ export class SaleModel extends Model implements Sale {
   @field('sale_value') sale_value!: number;
   @field('sale_id') sale_id?: string;
   @text('salesman') salesman?: string;
-  @field('unit') unit?: string;
+  @field('nearest_unit') nearest_unit?: string;
   @field('board_salesman') board_salesman?: string;
   @field('roaming') roaming?: number;
   @field('date_of_sale') date_of_sale?: string;
@@ -47,7 +47,7 @@ export class SaleModel extends Model implements Sale {
       longitude,
       sale_value,
       salesman,
-      unit,
+      nearest_unit,
       board_salesman,
       roaming,
       date_of_sale,
@@ -60,7 +60,7 @@ export class SaleModel extends Model implements Sale {
       longitude,
       sale_value,
       salesman,
-      unit,
+      nearest_unit,
       board_salesman,
       roaming,
       date_of_sale,

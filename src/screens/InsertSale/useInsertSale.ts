@@ -1,16 +1,12 @@
 import {useState} from 'react';
 import {Alert} from 'react-native';
 
-import NetInfo from '@react-native-community/netinfo';
 import {useNavigation} from '@react-navigation/native';
 
-import {useAuthContext} from '@contexts/AuthContext';
 import useGeoLocation from '@hooks/useGeoLocation';
 import type Sale from '@models/Sale';
 import {SalesService} from '@services/sales';
 import WMSalesActions from '@store/watermelon/action/SalesActions';
-
-import checkInternetConnectivity from '../../utils/checkInternetConnection';
 
 const useInsertSale = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,8 +17,6 @@ const useInsertSale = () => {
     hasUserPosition,
     isLoading: isLoadingLocation,
   } = useGeoLocation();
-
-  const {user} = useAuthContext();
 
   const navigation = useNavigation();
 

@@ -11,6 +11,7 @@ export interface RefreshTokenResponse extends LoginWithEmailResponse {}
 export interface GetSalesResponse {
   sales: Sale[];
   sales_amount: number;
+  menu: Menu;
 }
 
 export interface InsertSaleParams {
@@ -23,10 +24,16 @@ export interface InsertSaleRoamingParams extends InsertSaleParams {
   roaming: number;
 }
 
-export interface GetSalesParams {
+export interface FilterSalesParams {
   board?: string;
   salesman?: string;
   unit?: string;
   start_date?: string;
   end_date?: string;
+}
+
+export interface Menu {
+  boards: string[];
+  salesman: string[];
+  units: string[];
 }

@@ -55,12 +55,12 @@ const Login = () => {
     handleDevLogin('pele@magazineaziul.com.br');
 
   const loginWithDirector = () =>
-    handleDevLogin('vagner.mancini@magazineaziul.com.br');
+    handleDevLogin('rogerio.ceni@magazineaziul.com.br');
 
   const loginWithManager = () =>
-    handleDevLogin('ronaldinho.gaucho@magazineaziul.com.br');
+    handleDevLogin('deyverson.acosta@magazineaziul.com.br');
 
-  const loginWithSalesman = () => handleDevLogin('ryan@magazineaziul.com.br');
+  const loginWithSalesman = () => handleDevLogin('breno@magazineaziul.com.br');
 
   return (
     <View style={styles.container}>
