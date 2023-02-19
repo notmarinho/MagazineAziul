@@ -1,13 +1,15 @@
 import type {FC, PropsWithChildren} from 'react';
 import React, {createContext, useContext, useEffect, useState} from 'react';
 
+import NetInfo from '@react-native-community/netinfo';
+
 import type User from '@models/User';
 import {AuthService} from '@services/auth';
 import {Storage} from '@store/storage';
 
 interface AuthContextProps {
   user: User | null;
-  setUser: (user: User | null) => void;
+  onUserSignIn: (user: User) => void;
   logout: () => void;
   isGeneralManager: boolean;
   isDirector: boolean;
@@ -35,11 +37,18 @@ const AuthContextProvider: FC<PropsWithChildren> = ({children}) => {
     try {
       setIsLoading(true);
       const tokenOnStorage = await Storage.getToken();
+      const userLocalData = await Storage.getUserData();
 
       if (tokenOnStorage) {
-        await AuthService.getSignedUser()
-          .then(setUser)
-          .catch(() => Storage.removeToken());
+        const hasInternet = await NetInfo.fetch().then(
+          state => !!state.isConnected,
+        );
+
+        hasInternet
+          ? await AuthService.getSignedUser()
+              .then(setUser)
+              .catch(() => Storage.removeToken())
+          : setUser(userLocalData);
       }
     } catch (error) {
       Storage.removeToken();
@@ -53,6 +62,11 @@ const AuthContextProvider: FC<PropsWithChildren> = ({children}) => {
     Storage.removeToken();
   };
 
+  const onUserSignIn = (user: User) => {
+    setUser(user);
+    Storage.setUserData(user);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -62,7 +76,7 @@ const AuthContextProvider: FC<PropsWithChildren> = ({children}) => {
         isManager,
         isSalesman,
         logout,
-        setUser,
+        onUserSignIn,
         user,
       }}>
       {children}
