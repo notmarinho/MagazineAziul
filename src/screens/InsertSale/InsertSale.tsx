@@ -1,63 +1,26 @@
 import type {FC} from 'react';
-import {useState} from 'react';
 import React from 'react';
 import {
   ActivityIndicator,
-  Alert,
-  Button,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 
-import useGeoLocation from '@hooks/useGeoLocation';
 import type {AuthenticatedScreenProps} from '@navigation/types';
-import {SalesService} from '@services/sales';
 
 import styles from './styles';
+import useInsertSale from './useInsertSale';
 
-const InsertSale: FC<AuthenticatedScreenProps<'InsertSale'>> = ({
-  navigation,
-}) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [saleValue, setSaleValue] = useState('');
-
+const InsertSale: FC<AuthenticatedScreenProps<'InsertSale'>> = () => {
   const {
-    currentUserPosition,
+    handleAddSale,
     hasUserPosition,
-    isLoading: isLoadingLocation,
-  } = useGeoLocation();
-
-  const onSaleValueChange = (text: string) => {
-    // Only allow numbers
-    const regex = /^[0-9]*$/;
-    if (regex.test(text)) {
-      setSaleValue(text);
-    }
-  };
-
-  const onInsertSale = () => {
-    if (saleValue === '') {
-      Alert.alert('Error', 'You need to insert a sale value');
-      return;
-    }
-
-    setIsLoading(true);
-    SalesService.insertSale({
-      sale_value: saleValue,
-      latitude: String(currentUserPosition!.coords.latitude),
-      longitude: String(currentUserPosition!.coords.longitude),
-    })
-      .then(response => console.log(response))
-      .then(() => {
-        Alert.alert('Success', 'Sale inserted successfully');
-        setSaleValue('');
-        navigation.navigate('Dashboard');
-      })
-      .catch(error => console.error(error))
-      .finally(() => setIsLoading(false));
-  };
+    isLoading,
+    onSaleValueChange,
+    saleValue,
+  } = useInsertSale();
 
   return (
     <View style={styles.container}>
@@ -68,13 +31,14 @@ const InsertSale: FC<AuthenticatedScreenProps<'InsertSale'>> = ({
           onChangeText={onSaleValueChange}
           autoFocus
           keyboardType="numeric"
+          placeholder="Sale value"
         />
       </View>
       <TouchableOpacity
-        onPress={onInsertSale}
+        onPress={handleAddSale}
         style={hasUserPosition ? styles.button : styles.disabledButton}
         disabled={!hasUserPosition}>
-        {isLoadingLocation || isLoading ? (
+        {isLoading ? (
           <ActivityIndicator animating />
         ) : (
           <Text
