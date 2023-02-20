@@ -35,7 +35,12 @@ const Dashboard: FC<AuthenticatedScreenProps<'Dashboard'>> = ({navigation}) => {
               onPress={() =>
                 navigation.navigate('SaleDetails', item.getData())
               }>
-              <Text>{toCurrency(item.sale_value)}</Text>
+              <Text
+                style={{
+                  fontFamily: 'Jaldi-Regular',
+                }}>
+                {toCurrency(item.sale_value)}
+              </Text>
             </Pressable>
           )}
           ListEmptyComponent={() => <Text>Nenhuma venda encontrada</Text>}
