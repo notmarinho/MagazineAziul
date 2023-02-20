@@ -1,67 +1,88 @@
 import type {FC} from 'react';
-import React from 'react';
+import React, {useCallback, useEffect, useRef} from 'react';
 import {Button, StyleSheet, View} from 'react-native';
 import MapView, {Circle} from 'react-native-maps';
 
-import {useAuthContext} from '@contexts/AuthContext';
-import useGeoLocation from '@hooks/useGeoLocation';
 import type {AuthenticatedScreenProps} from '@navigation/types';
+import {map} from '@nozbe/watermelondb/utils/rx';
+import {useAppSelector} from '@store/redux';
 
-const saleValues = [
-  {
-    value: 400,
-    city: 'campo_grande',
-  },
-  {
-    value: 200,
-    city: 'cuiaba',
-  },
-  {
-    value: 1500,
-    city: 'sao_paulo',
-  },
-];
-const locationsCoords = {
-  campo_grande: {
-    latitude: -20.468,
-    longitude: -54.629,
-  },
-  cuiaba: {
-    latitude: -15.596,
-    longitude: -56.096,
-  },
-  sao_paulo: {
-    latitude: -23.548,
-    longitude: -46.638,
-  },
-};
+import type {UnityCoordsLocation} from '../../constants/unitiesLocations';
+import unitiesLocations from '../../constants/unitiesLocations';
 
 const SalesMap: FC<AuthenticatedScreenProps<'SalesMap'>> = ({navigation}) => {
-  const {user} = useAuthContext();
-  const {hasUserPosition, currentUserPosition} = useGeoLocation();
+  const {
+    unitiesSalesData,
+    salesAmount: totalSales,
+    menu,
+  } = useAppSelector(state => state.sales);
 
-  const getRadius = (value: number) => 100 + ((value - 1) / 9) * 800;
+  const mapRef = useRef<MapView>(null);
 
-  const renderCircles = () =>
-    saleValues.map((value, index) => {
-      const radius = getRadius(value.value);
-      return (
-        <Circle
-          key={index}
-          center={locationsCoords[value.city]}
-          radius={radius}
-          fillColor="rgba(255, 0, 0, 0.2)"
-          strokeColor="rgba(255, 0, 0, 0.5)"
-          strokeWidth={2}
-        />
-      );
-    });
+  // useEffect(() => {
+  //   if (mapRef.current && coordinates.length > 0) {
+  //     mapRef.current.fitToCoordinates(coordinates, {
+  //       edgePadding: { top: 10, right: 10, bottom: 10, left: 10 },
+  //       animated: true,
+  //     });
+  //   }
+  // }, [coordinates]);
 
+  const getRadius = (salesAmount: number) => {
+    if (salesAmount === 0 || totalSales === 0) {
+      return 0;
+    }
+    const radius = (salesAmount / totalSales) * 150000;
+    return radius;
+  };
+
+  const fitToCoordinates = () => {
+    const coordinates = menu?.units.map(
+      location => unitiesLocations[location as UnityCoordsLocation],
+    );
+
+    if (coordinates?.length === 1) {
+      mapRef.current?.animateToRegion({
+        latitude: coordinates[0].latitude,
+        longitude: coordinates[0].longitude,
+        latitudeDelta: 0.5,
+        longitudeDelta: 0.5,
+      });
+    } else {
+      mapRef.current?.fitToCoordinates(coordinates, {
+        edgePadding: {top: 10, right: 50, bottom: 10, left: 50},
+        animated: true,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (menu?.boards) {
+      fitToCoordinates();
+    }
+  }, [menu?.boards]);
+
+  const renderCircles = useCallback(
+    () =>
+      unitiesSalesData.map((location, index) => {
+        const radius = getRadius(location.sales_amount);
+        return (
+          <Circle
+            key={`@SaleCircle-${index}`}
+            center={location.coords}
+            radius={radius}
+            fillColor="rgba(255, 0, 0, 0.5)"
+            strokeColor="rgba(255, 0, 0, 0.5)"
+            strokeWidth={5}
+          />
+        );
+      }),
+    [unitiesSalesData, totalSales],
+  );
   return (
     <View style={styles.container}>
       <MapView
-        showsUserLocation
-        followsUserLocation
+        ref={mapRef}
         rotateEnabled={false}
         style={styles.mapContainer}
         initialRegion={{

@@ -1,30 +1,25 @@
 import {useEffect, useRef, useState} from 'react';
 
-import NetInfo from '@react-native-community/netinfo';
-
-import {useAuthContext} from '@contexts/AuthContext';
+import {useAppContext} from '@contexts/AppContext';
 import type BottomSheet from '@gorhom/bottom-sheet';
 import type {SaleModel} from '@models/Sale';
 import type {FilterSalesParams} from '@services/types';
+import {useAppSelector} from '@store/redux';
 import WMSalesActions from '@store/watermelon/action/SalesActions';
 
 const useDashboard = () => {
   const [sales, setSales] = useState<SaleModel[]>([]);
   const [displaySales, setDisplaySales] = useState<SaleModel[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   const bottomSheetRef = useRef<BottomSheet>(null);
 
-  const {logout, isSalesman, user} = useAuthContext();
+  const {signOut} = useAppContext();
+  const user = useAppSelector(state => state.user.user);
+  const isSalesman = user?.profile === 'salesman';
 
-  const onLogout = () => {
-    WMSalesActions.removeSales();
-    logout();
-  };
-
-  const onSalesChange = (sales: SaleModel[]) => {
-    setSales(sales);
-    setDisplaySales(sales);
+  const onSalesChange = (nextSales: SaleModel[]) => {
+    setSales(nextSales);
+    setDisplaySales(nextSales);
   };
 
   const handleFilterSales = async (filterParams: FilterSalesParams) => {
@@ -52,8 +47,7 @@ const useDashboard = () => {
   return {
     sales: displaySales,
     user,
-    onLogout,
-    isLoading,
+    onLogout: signOut,
     isSalesman,
     bottomSheetRef,
     handleFilterSales,

@@ -1,9 +1,5 @@
-import NetInfo from '@react-native-community/netinfo';
-
-import {Q} from '@nozbe/watermelondb';
 import {SalesService} from '@services/sales';
 import type {FilterSalesParams} from '@services/types';
-import {Storage} from '@store/storage';
 
 import type {SaleModel} from '../../../models/Sale';
 import type Sale from '../../../models/Sale';
@@ -13,7 +9,6 @@ const salesCollection = database.collections.get<SaleModel>('sales');
 
 const WMSalesActions = {
   async addSale(sale: Sale) {
-    console.log(sale);
     return database.write(
       async () =>
         await salesCollection.create(newItem => {
@@ -31,7 +26,7 @@ const WMSalesActions = {
     );
   },
 
-  async addServeSales(sales: Sale[]) {
+  async addServeSalesLocally(sales: Sale[]) {
     database.write(async () => {
       database.batch(
         sales.map(sale =>
@@ -95,65 +90,24 @@ const WMSalesActions = {
     );
   },
 
-  async syncLocalSalesWithServer() {
-    try {
-      const hasInternet = await NetInfo.fetch().then(
-        state => !!state.isConnected,
-      );
-
-      if (!hasInternet) {
-        throw new Error('Offline Mode');
-      }
-
-      console.log('Syncing 🔄');
-
-      let [apiSales, localSales, notSyncedSales] = await Promise.all([
-        SalesService.getSales(),
-        salesCollection.query().fetch(),
-        salesCollection.query(Q.where('synced', false)).fetch(),
-      ]);
-
-      const hasNotSyncedSales = notSyncedSales.length > 0;
-
-      if (hasNotSyncedSales) {
-        await Promise.all(
-          notSyncedSales.map(async sale => {
-            const saleData = await SalesService.insertSale(
-              sale.getServerFields(),
-            );
-            await database.write(async () => {
-              await sale.update(saleItem => {
-                saleItem.sale_id = saleData.sale_id;
-                saleItem.synced = true;
-                saleItem.nearest_unit = saleData.nearest_unit;
-                saleItem.board_salesman = saleData.board_salesman;
-                saleItem.roaming = saleData.roaming;
-                saleItem.date_of_sale = saleData.date_of_sale;
-                saleItem.hour_of_sale = saleData.hour_of_sale;
-                saleItem.salesman = saleData.salesman;
-              });
-            });
-          }),
-        );
-      }
-
-      // Adding new sales from server to local database
-      const serverSales = apiSales.sales.filter(
-        apiSale =>
-          !localSales.find(localSale => localSale.sale_id === apiSale.sale_id),
-      );
-      const hasNewSales = serverSales.length > 0;
-
-      if (hasNewSales) {
-        await this.addServeSales(serverSales).then(() =>
-          console.log('New sales 📲'),
-        );
-      }
-
-      return apiSales;
-    } catch (error: any) {
-      return Promise.reject(error);
-    }
+  async syncNotSyncedSales(notSyncedSales: SaleModel[]) {
+    await Promise.all(
+      notSyncedSales.map(async sale => {
+        const saleData = await SalesService.insertSale(sale.getServerFields());
+        await database.write(async () => {
+          await sale.update(saleItem => {
+            saleItem.sale_id = saleData.sale_id;
+            saleItem.synced = true;
+            saleItem.nearest_unit = saleData.nearest_unit;
+            saleItem.board_salesman = saleData.board_salesman;
+            saleItem.roaming = saleData.roaming;
+            saleItem.date_of_sale = saleData.date_of_sale;
+            saleItem.hour_of_sale = saleData.hour_of_sale;
+            saleItem.salesman = saleData.salesman;
+          });
+        });
+      }),
+    );
   },
 };
 

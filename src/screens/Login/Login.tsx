@@ -9,19 +9,20 @@ import {
   View,
 } from 'react-native';
 
-import {AuthService} from '@services/auth';
-import {Storage} from '@store/storage';
+import {useAppContext} from '@contexts/AppContext';
+import {useAppDispatch, useAppSelector} from '@store/redux';
+import {signIn} from '@store/redux/thunk/userThunk';
 
-import {useAuthContext} from '../../contexts/AuthContext';
 import styles from './styles';
 
 const Login = () => {
-  const {onUserSignIn: handleUserOnContext} = useAuthContext();
-
   const [email, setEmail] = useState('afonso.afancar@magazineaziul.com.br');
   const [password, setPassword] = useState('mudar123');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+
+  const {hasInternet} = useAppContext();
+
+  const dispatch = useAppDispatch();
+  const {isSignInLoading} = useAppSelector(state => state.user);
 
   const onLoginPress = () => {
     if (!email) {
@@ -32,23 +33,11 @@ const Login = () => {
       return Alert.alert('Please enter password');
     }
 
-    setIsLoading(true);
-    AuthService.loginWithEmail(email, password)
-      .then(response => Storage.setToken(response.access_token))
-      .then(AuthService.getSignedUser)
-      .then(handleUserOnContext)
-      .catch(error => console.log(error))
-      .finally(() => setIsLoading(false));
+    dispatch(signIn({email, password}));
   };
 
   const handleDevLogin = (customEmail: string) => {
-    setIsLoading(true);
-    AuthService.loginWithEmail(customEmail, password)
-      .then(response => Storage.setToken(response.access_token))
-      .then(AuthService.getSignedUser)
-      .then(handleUserOnContext)
-      .catch(error => console.log(error))
-      .finally(() => setIsLoading(false));
+    dispatch(signIn({email: customEmail, password}));
   };
 
   const loginWithGeneralManager = () =>
@@ -83,11 +72,14 @@ const Login = () => {
         <TouchableOpacity
           style={styles.button}
           activeOpacity={0.7}
+          disabled={!hasInternet}
           onPress={onLoginPress}>
-          {isLoading ? (
+          {isSignInLoading ? (
             <ActivityIndicator size="small" color="#fff" />
           ) : (
-            <Text style={styles.buttonLabel}>Login</Text>
+            <Text style={styles.buttonLabel}>
+              {hasInternet ? 'Login' : 'No Connection'}
+            </Text>
           )}
         </TouchableOpacity>
       </View>
