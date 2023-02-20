@@ -72,9 +72,6 @@ const WMSalesActions = {
       );
     }
 
-    console.log(filterParams.unit);
-    console.log(filteredSales[0].getData());
-
     if (filterParams.unit) {
       filteredSales = filteredSales.filter(
         sale => sale.nearest_unit === filterParams.unit,

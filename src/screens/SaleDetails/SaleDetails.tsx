@@ -1,13 +1,16 @@
 import type {FC} from 'react';
 import React from 'react';
-import {Text, View} from 'react-native';
+import {Button, Text, View} from 'react-native';
 import MapView, {Marker} from 'react-native-maps';
 
 import type {AuthenticatedScreenProps} from '@navigation/types';
 
 import styles from './styles';
 
-const SaleDetails: FC<AuthenticatedScreenProps<'SaleDetails'>> = ({route}) => {
+const SaleDetails: FC<AuthenticatedScreenProps<'SaleDetails'>> = ({
+  route,
+  navigation,
+}) => {
   const {longitude, latitude, synced} = route.params;
 
   return (
@@ -37,6 +40,8 @@ const SaleDetails: FC<AuthenticatedScreenProps<'SaleDetails'>> = ({route}) => {
           }}
         />
       </MapView>
+
+      <Button title="voltar" onPress={navigation.goBack} />
     </View>
   );
 };

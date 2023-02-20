@@ -61,7 +61,7 @@ const useInsertSale = () => {
       sale_value: saleValue,
     })
       .then(addToLocalDB)
-      .catch(error => {
+      .catch(() => {
         addToLocalDB(null);
       });
 
