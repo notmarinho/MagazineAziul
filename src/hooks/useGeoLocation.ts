@@ -3,7 +3,7 @@ import type {AlertButton} from 'react-native';
 import {Platform} from 'react-native';
 import {Alert, Linking} from 'react-native';
 import Geolocation, {PositionError} from 'react-native-geolocation-service';
-import {check, PERMISSIONS, request} from 'react-native-permissions';
+import {PERMISSIONS, request} from 'react-native-permissions';
 
 const cancelAlertButton: AlertButton = {
   text: 'Cancel',

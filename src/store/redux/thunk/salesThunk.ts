@@ -1,7 +1,7 @@
 import NetInfo from '@react-native-community/netinfo';
+import {Q} from '@nozbe/watermelondb';
 
 import type {SaleModel} from '@models/Sale';
-import {Q} from '@nozbe/watermelondb';
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import {SalesService} from '@services/sales';
 import type {GetSalesResponse} from '@services/types';

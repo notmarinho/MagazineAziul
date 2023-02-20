@@ -4,7 +4,6 @@ import {Button, StyleSheet, View} from 'react-native';
 import MapView, {Circle} from 'react-native-maps';
 
 import type {AuthenticatedScreenProps} from '@navigation/types';
-import {map} from '@nozbe/watermelondb/utils/rx';
 import {useAppSelector} from '@store/redux';
 
 import type {UnityCoordsLocation} from '../../constants/unitiesLocations';
@@ -18,15 +17,6 @@ const SalesMap: FC<AuthenticatedScreenProps<'SalesMap'>> = ({navigation}) => {
   } = useAppSelector(state => state.sales);
 
   const mapRef = useRef<MapView>(null);
-
-  // useEffect(() => {
-  //   if (mapRef.current && coordinates.length > 0) {
-  //     mapRef.current.fitToCoordinates(coordinates, {
-  //       edgePadding: { top: 10, right: 10, bottom: 10, left: 10 },
-  //       animated: true,
-  //     });
-  //   }
-  // }, [coordinates]);
 
   const getRadius = (salesAmount: number) => {
     if (salesAmount === 0 || totalSales === 0) {
