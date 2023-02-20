@@ -6,15 +6,15 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import SplashScreen from '@screens/Splash/SplashScreen';
+import {useAppSelector} from '@store/redux';
 
-import {useAuthContext} from '../contexts/AuthContext';
 import AuthenticatedStackNavigator from './AuthenticatedStack';
 import NonAuthenticatedStackNavigator from './NonAuthenticatedStack';
 
 const AppStack = createNativeStackNavigator();
 
 const Navigator = () => {
-  const {user, isLoading} = useAuthContext();
+  const {user, isLoading} = useAppSelector(state => state.user);
   return (
     <NavigationContainer>
       <AppStack.Navigator

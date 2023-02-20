@@ -2,18 +2,18 @@ import type {FC, ForwardRefRenderFunction} from 'react';
 import React, {forwardRef, useCallback, useMemo} from 'react';
 import {Button, View} from 'react-native';
 
-import {useAuthContext} from '@contexts/AuthContext';
 import type {BottomSheetBackdropProps} from '@gorhom/bottom-sheet';
 import BottomSheet, {BottomSheetBackdrop} from '@gorhom/bottom-sheet';
 import useDropDown from '@hooks/useDropDown';
 import type {FilterSalesParams} from '@services/types';
+import {useAppSelector} from '@store/redux';
 
 interface FilterContentProps {
   onFilter: (filterParams: FilterSalesParams) => void;
 }
 
 const FilterContent: FC<FilterContentProps> = ({onFilter}) => {
-  const {menu} = useAuthContext();
+  const menu = useAppSelector(state => state.sales.menu);
 
   const [DropDownBoard, board, setBoard] = useDropDown(menu?.boards, {
     zIndex: 3000,
@@ -83,7 +83,6 @@ const FilterBottomSheet: ForwardRefRenderFunction<
 > = ({onFilter}, ref) => {
   const snapPoints = useMemo(() => ['50%'], []);
 
-  // renders
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
       <BottomSheetBackdrop
