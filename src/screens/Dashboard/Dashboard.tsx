@@ -10,13 +10,25 @@ import styles from './styles';
 import useDashboard from './useDashboard';
 
 const Dashboard: FC<AuthenticatedScreenProps<'Dashboard'>> = ({navigation}) => {
-  const {sales, isSalesman, onLogout, handleFilterSales, bottomSheetRef, user} =
-    useDashboard();
+  const {
+    sales,
+    isSalesman,
+    onLogout,
+    handleFilterSales,
+    bottomSheetRef,
+    user,
+    theme,
+  } = useDashboard();
 
   const renderHeader = () =>
     !isSalesman ? (
       <View style={styles.header}>
-        <Text>Olá, {user?.name}</Text>
+        <Text
+          style={{
+            color: theme.colors.primary,
+          }}>
+          Olá, {user?.name}
+        </Text>
         <Button
           title="Filtrar"
           onPress={() => bottomSheetRef.current?.expand()}

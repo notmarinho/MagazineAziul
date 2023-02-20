@@ -1,5 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 
+import {useTheme} from '@react-navigation/native';
+
 import {useAppContext} from '@contexts/AppContext';
 import type BottomSheet from '@gorhom/bottom-sheet';
 import type {SaleModel} from '@models/Sale';
@@ -10,6 +12,7 @@ import WMSalesActions from '@store/watermelon/action/SalesActions';
 const useDashboard = () => {
   const [sales, setSales] = useState<SaleModel[]>([]);
   const [displaySales, setDisplaySales] = useState<SaleModel[]>([]);
+  const theme = useTheme();
 
   const bottomSheetRef = useRef<BottomSheet>(null);
 
@@ -51,6 +54,7 @@ const useDashboard = () => {
     isSalesman,
     bottomSheetRef,
     handleFilterSales,
+    theme,
   };
 };
 
