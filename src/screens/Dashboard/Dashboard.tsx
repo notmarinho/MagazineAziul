@@ -5,6 +5,7 @@ import {Button, FlatList, Pressable, Text, View} from 'react-native';
 import FilterBottomSheet from '@components/FilterBottomSheet/FilterBottomSheet';
 import type {AuthenticatedScreenProps} from '@navigation/types';
 
+import toCurrency from '../../utils/toCurrency';
 import styles from './styles';
 import useDashboard from './useDashboard';
 
@@ -34,7 +35,7 @@ const Dashboard: FC<AuthenticatedScreenProps<'Dashboard'>> = ({navigation}) => {
               onPress={() =>
                 navigation.navigate('SaleDetails', item.getData())
               }>
-              <Text>{item.sale_value}</Text>
+              <Text>{toCurrency(item.sale_value)}</Text>
             </Pressable>
           )}
           ListEmptyComponent={() => <Text>Nenhuma venda encontrada</Text>}

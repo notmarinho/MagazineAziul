@@ -1,9 +1,10 @@
 import type {FC, ForwardRefRenderFunction} from 'react';
 import React, {forwardRef, useCallback, useMemo} from 'react';
-import {Button, View} from 'react-native';
+import {Button, Text, View} from 'react-native';
 
 import type {BottomSheetBackdropProps} from '@gorhom/bottom-sheet';
 import BottomSheet, {BottomSheetBackdrop} from '@gorhom/bottom-sheet';
+import useDatePicker from '@hooks/useDatePicker';
 import useDropDown from '@hooks/useDropDown';
 import type {FilterSalesParams} from '@services/types';
 import {useAppSelector} from '@store/redux';
@@ -35,11 +36,28 @@ const FilterContent: FC<FilterContentProps> = ({onFilter}) => {
     placeholder: 'Selecione uma unidade',
   });
 
+  const [
+    initialDate,
+    InitialDatePicker,
+    setOpenInitialDate,
+    setDateInitialDate,
+    formattedInitialDate,
+  ] = useDatePicker();
+  const [
+    finalDate,
+    FinalDatePicker,
+    setOpenFinalDate,
+    setFinalDate,
+    formattedFinalDate,
+  ] = useDatePicker();
+
   const handleFilterPress = () => {
     onFilter({
       salesman: salesman ? salesman : undefined,
       unit: unit ? unit : undefined,
       board: board ? board : undefined,
+      end_date: formattedFinalDate,
+      start_date: formattedInitialDate,
     });
   };
 
@@ -48,6 +66,8 @@ const FilterContent: FC<FilterContentProps> = ({onFilter}) => {
     setUnit(null);
     setBoard(null);
     onFilter({});
+    setFinalDate(new Date());
+    setDateInitialDate(new Date());
   };
 
   return (
@@ -63,12 +83,32 @@ const FilterContent: FC<FilterContentProps> = ({onFilter}) => {
       <DropDownSalesman />
       <View
         style={{
+          width: '100%',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}>
+        <View>
+          <Text>{formattedInitialDate}</Text>
+          <Button
+            title="Data inicial"
+            onPress={() => setOpenInitialDate(true)}
+          />
+        </View>
+        <View>
+          <Text>{formattedFinalDate}</Text>
+          <Button title="Data final" onPress={() => setOpenFinalDate(true)} />
+        </View>
+      </View>
+      <View
+        style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
         }}>
         <Button title="Limpar" onPress={handleClearPress} />
         <Button title="Filter" onPress={handleFilterPress} />
       </View>
+      <InitialDatePicker />
+      <FinalDatePicker />
     </View>
   );
 };
