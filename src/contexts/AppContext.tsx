@@ -40,14 +40,12 @@ const AppContextProvider: FC<PropsWithChildren> = ({children}) => {
     if (user) {
       dispatch(initSales());
     }
-    if (user && shouldSync && hasInternet) {
-      dispatch(syncSales()).then(() => setShouldSync(false));
-    }
   }, [user, shouldSync, hasInternet]);
 
   useEffect(() => {
     if (!hasInternet && !shouldSync) {
       setShouldSync(true);
+      console.log('Should Sync When Online');
     }
   }, [hasInternet]);
 

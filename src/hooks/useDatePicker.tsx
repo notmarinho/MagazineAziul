@@ -15,7 +15,7 @@ type useDatePickerReturn = [
 const useDatePicker = (initialDate = new Date()): useDatePickerReturn => {
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState(initialDate);
-  const formattedDate = format(date, 'dd-MM-yyyy');
+  const formattedDate = format(date, 'dd/MM/yyyy');
 
   const DatePickerModal = () => (
     <DatePicker

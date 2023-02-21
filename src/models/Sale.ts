@@ -1,6 +1,8 @@
 import {Model} from '@nozbe/watermelondb';
 import {field, text} from '@nozbe/watermelondb/decorators';
 
+import {parse} from 'date-fns';
+
 type Sale = {
   readonly sale_id?: string;
   longitude: string;
@@ -10,7 +12,7 @@ type Sale = {
   nearest_unit?: string;
   board_salesman?: string;
   roaming?: number;
-  date_of_sale?: string;
+  date_of_sale: string;
   hour_of_sale?: string;
   synced?: boolean;
 };
@@ -26,22 +28,23 @@ export class SaleModel extends Model implements Sale {
   @field('nearest_unit') nearest_unit?: string;
   @field('board_salesman') board_salesman?: string;
   @field('roaming') roaming?: number;
-  @field('date_of_sale') date_of_sale?: string;
+  @field('date_of_sale') date_of_sale!: string;
   @field('hour_of_sale') hour_of_sale?: string;
   @field('synced') synced?: boolean;
 
   // Return only the fields that are needed to be sent to the server
   getServerFields() {
-    const {sale_value, latitude, longitude} = this;
+    const {sale_value, latitude, longitude, date_of_sale} = this;
     return {
       sale_value: String(sale_value),
       latitude,
       longitude,
+      date_of_sale,
     };
   }
 
   // Return only the fields that are needed to be sent to the server
-  getData(): Sale {
+  getData() {
     const {
       latitude,
       longitude,
@@ -50,9 +53,9 @@ export class SaleModel extends Model implements Sale {
       nearest_unit,
       board_salesman,
       roaming,
-      date_of_sale,
       hour_of_sale,
       synced,
+      date_of_sale,
     } = this;
 
     return {
@@ -67,6 +70,12 @@ export class SaleModel extends Model implements Sale {
       hour_of_sale,
       synced,
     };
+  }
+
+  getDate(): Date {
+    const {date_of_sale} = this;
+
+    return parse(date_of_sale, 'yyyy-MM-dd', new Date());
   }
 }
 

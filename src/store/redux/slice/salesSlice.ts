@@ -11,6 +11,7 @@ interface SalesState {
   unitiesSalesData: UnitySaleData[];
   salesAmount: number;
   sales: Sale[];
+  currentSale: Sale | null;
   menu: Menu | null;
   isLoading: boolean;
 }
@@ -19,6 +20,7 @@ const initialState: SalesState = {
   unitiesSalesData: [],
   salesAmount: 0,
   sales: [],
+  currentSale: null,
   menu: null,
   isLoading: true,
 };
@@ -27,8 +29,11 @@ const salesSlice = createSlice({
   name: 'sales',
   initialState,
   reducers: {
-    setUnitiesSalesData: (state, action: PayloadAction<UnitySaleData[]>) => {
-      state.unitiesSalesData = action.payload;
+    setCurrentSale: (
+      state,
+      action: PayloadAction<SalesState['currentSale']>,
+    ) => {
+      state.currentSale = action.payload;
     },
   },
   extraReducers: ({addCase}) => {
@@ -54,5 +59,7 @@ const salesSlice = createSlice({
     });
   },
 });
+
+export const {setCurrentSale} = salesSlice.actions;
 
 export default salesSlice.reducer;

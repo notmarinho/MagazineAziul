@@ -1,14 +1,12 @@
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 
-import type Sale from '@models/Sale';
-
 export type NonAuthenticatedStackParamList = {
   Login: undefined;
 };
 
 export type AuthenticatedStackParamList = {
   Dashboard: undefined;
-  SaleDetails: Sale;
+  SaleDetails: undefined;
   InsertSale: undefined;
   SalesMap: undefined;
 };

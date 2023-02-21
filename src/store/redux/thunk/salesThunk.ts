@@ -8,9 +8,8 @@ import type {GetSalesResponse} from '@services/types';
 import {Storage} from '@store/storage';
 import database from '@store/watermelon';
 import WMSalesActions from '@store/watermelon/action/SalesActions';
+import getUnitiesDataFromSales from '@utils/sales';
 
-import type {UnityCoordsLocation} from '../../../constants/unitiesLocations';
-import unitiesLocations from '../../../constants/unitiesLocations';
 import type {RootState} from '..';
 
 export type UnitySaleData = {
@@ -51,7 +50,7 @@ export const initSales = createAsyncThunk(
 
 export const getUnitiesData = createAsyncThunk(
   'sales/getUserUnities',
-  async (
+  (
     {sales, menu: {units}}: GetSalesResponse,
     {rejectWithValue, getState, fulfillWithValue},
   ) => {
@@ -65,19 +64,7 @@ export const getUnitiesData = createAsyncThunk(
         return fulfillWithValue([]);
       }
 
-      const unitiesSalesData = units.map(unit => {
-        const unitSales = sales.filter(sale => sale.nearest_unit === unit);
-        const unitSaleAmount = unitSales.reduce(
-          (acc, sale) => acc + sale.sale_value,
-          0,
-        );
-
-        return {
-          unit,
-          coords: unitiesLocations[unit as UnityCoordsLocation],
-          sales_amount: unitSaleAmount,
-        };
-      });
+      const unitiesSalesData = getUnitiesDataFromSales(sales, units);
 
       return unitiesSalesData;
     } catch (error) {
