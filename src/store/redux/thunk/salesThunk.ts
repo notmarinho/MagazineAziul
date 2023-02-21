@@ -1,12 +1,10 @@
 import NetInfo from '@react-native-community/netinfo';
-import {Q} from '@nozbe/watermelondb';
 
-import type {SaleModel} from '@models/Sale';
+import type Sale from '@models/Sale';
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import {SalesService} from '@services/sales';
 import type {GetSalesResponse} from '@services/types';
 import {Storage} from '@store/storage';
-import database from '@store/watermelon';
 import WMSalesActions from '@store/watermelon/action/SalesActions';
 import getUnitiesDataFromSales from '@utils/sales';
 
@@ -21,8 +19,6 @@ export type UnitySaleData = {
   sales_amount: number;
 };
 
-const salesCollection = database.collections.get<SaleModel>('sales');
-
 export const initSales = createAsyncThunk(
   'sales/init',
   async (_, {rejectWithValue, dispatch}) => {
@@ -35,11 +31,13 @@ export const initSales = createAsyncThunk(
         ? await SalesService.getSales()
         : await Storage.getSalesData();
 
-      await Promise.all([
-        Storage.setSalesData(salesResponse),
-        dispatch(getUnitiesData(salesResponse)),
-        dispatch(syncSales(salesResponse.sales)),
-      ]);
+      await dispatch(getUnitiesData(salesResponse));
+
+      if (hasInternet) {
+        await dispatch(handlePushSales(salesResponse.sales));
+        await dispatch(handlePullSales());
+        await Storage.setSalesData(salesResponse);
+      }
 
       return salesResponse;
     } catch (error) {
@@ -73,52 +71,33 @@ export const getUnitiesData = createAsyncThunk(
   },
 );
 
-export const syncSales = createAsyncThunk(
-  'sales/syncSales',
-  async (sales: GetSalesResponse['sales'] | undefined, {rejectWithValue}) => {
-    try {
-      const hasInternet = await NetInfo.fetch().then(
-        state => !!state.isConnected,
-      );
+export const handlePullSales = createAsyncThunk(
+  'sales/handlePullSales',
+  async _ => {
+    const notSyncedSales = await WMSalesActions.getNotSyncedSales();
 
-      if (!hasInternet) {
-        return rejectWithValue("You're offline");
-      }
+    if (notSyncedSales.length > 0) {
+      await WMSalesActions.syncNotSyncedSales(notSyncedSales);
+      console.log('Local Sales Sended 📬');
+    }
+  },
+);
 
-      console.log('Syncing 🔄');
-      if (!sales) {
-        sales = await SalesService.getSales().then(response => response.sales);
-      }
+export const handlePushSales = createAsyncThunk(
+  'sales/handlePushSales',
+  async (sales: Sale[]) => {
+    const localSales = await WMSalesActions.getSales();
 
-      let [localSales, notSyncedSales] = await Promise.all([
-        salesCollection.query().fetch(),
-        salesCollection.query(Q.where('synced', false)).fetch(),
-      ]);
+    const serverSales = sales!.filter(
+      apiSale =>
+        !localSales.find(localSale => localSale.sale_id === apiSale.sale_id),
+    );
 
-      const hasNotSyncedSales = notSyncedSales.length > 0;
+    console.log({new: serverSales.length});
 
-      if (hasNotSyncedSales) {
-        await WMSalesActions.syncNotSyncedSales(notSyncedSales);
-        console.log('Local Sales Sended 📬');
-      }
-
-      const hasNewServerSales =
-        sales!.filter(
-          apiSale =>
-            !localSales.find(
-              localSale => localSale.sale_id === apiSale.sale_id,
-            ),
-        ).length > 0;
-
-      if (hasNewServerSales) {
-        await WMSalesActions.addServeSalesLocally(sales!);
-        console.log('New sales 📲');
-      }
-
-      console.log('Synced ✅');
-    } catch (error) {
-      console.error('Something went wrong while syncing sales: ', error);
-      return rejectWithValue(error);
+    if (serverSales) {
+      console.log('New sales 📲');
+      await WMSalesActions.addServeSalesLocally(serverSales!);
     }
   },
 );

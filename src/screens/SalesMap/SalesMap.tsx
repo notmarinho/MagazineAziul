@@ -1,8 +1,9 @@
 import type {FC} from 'react';
 import React, {useCallback, useEffect, useRef} from 'react';
-import {Button, StyleSheet, View} from 'react-native';
+import {Platform, StyleSheet, View} from 'react-native';
 import MapView, {Circle} from 'react-native-maps';
 
+import Button from '@components/Button/Button';
 import type {AuthenticatedScreenProps} from '@navigation/types';
 import {useAppSelector} from '@store/redux';
 
@@ -83,10 +84,21 @@ const SalesMap: FC<AuthenticatedScreenProps<'SalesMap'>> = ({navigation}) => {
         }}>
         {renderCircles()}
       </MapView>
-      <Button
-        title="Go to Dashboard"
-        onPress={() => navigation.navigate('Dashboard')}
-      />
+      <View
+        style={{
+          paddingHorizontal: 20,
+          alignItems: 'center',
+        }}>
+        <Button
+          style={{
+            position: 'absolute',
+            zIndex: 1,
+            bottom: Platform.OS === 'ios' ? 60 : 40,
+          }}
+          label="Ir para Dashboard"
+          onPress={() => navigation.navigate('Dashboard')}
+        />
+      </View>
     </View>
   );
 };

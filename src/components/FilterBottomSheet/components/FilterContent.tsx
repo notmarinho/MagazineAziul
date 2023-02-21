@@ -111,6 +111,7 @@ const createStyles = ({theme: {colors}}: DefaultStyleParams) =>
       fontWeight: 'bold',
       paddingHorizontal: 20,
       marginBottom: 10,
+      color: colors.onBackground,
     },
     filtersContainer: {
       flex: 1,
@@ -123,6 +124,6 @@ const createStyles = ({theme: {colors}}: DefaultStyleParams) =>
     },
     buttonsContainer: {
       justifyContent: 'space-between',
-      paddingHorizontal: 20,
+      padding: 20,
     },
   });

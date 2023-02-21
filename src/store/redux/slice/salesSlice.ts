@@ -4,6 +4,8 @@ import {createSlice} from '@reduxjs/toolkit';
 import type {Menu} from '@services/types';
 
 import type {UnitySaleData} from '../thunk/salesThunk';
+import {handlePushSales} from '../thunk/salesThunk';
+import {handlePullSales} from '../thunk/salesThunk';
 import {syncSales} from '../thunk/salesThunk';
 import {getUnitiesData, initSales} from '../thunk/salesThunk';
 
@@ -14,6 +16,8 @@ interface SalesState {
   currentSale: Sale | null;
   menu: Menu | null;
   isLoading: boolean;
+  isLoadingPull: boolean;
+  isLoadingPush: boolean;
 }
 
 const initialState: SalesState = {
@@ -23,6 +27,8 @@ const initialState: SalesState = {
   currentSale: null,
   menu: null,
   isLoading: true,
+  isLoadingPull: false,
+  isLoadingPush: false,
 };
 
 const salesSlice = createSlice({
@@ -49,13 +55,17 @@ const salesSlice = createSlice({
       state.sales = action.payload.sales;
       state.isLoading = false;
     });
-    addCase(syncSales.pending, state => {
-      if (!state.isLoading) {
-        state.isLoading = true;
-      }
+    addCase(handlePullSales.pending, state => {
+      state.isLoadingPull = true;
     });
-    addCase(syncSales.fulfilled, state => {
-      state.isLoading = false;
+    addCase(handlePullSales.fulfilled, state => {
+      state.isLoadingPull = false;
+    });
+    addCase(handlePushSales.pending, state => {
+      state.isLoadingPush = true;
+    });
+    addCase(handlePushSales.fulfilled, state => {
+      state.isLoadingPush = false;
     });
   },
 });

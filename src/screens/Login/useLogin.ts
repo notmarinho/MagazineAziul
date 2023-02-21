@@ -10,7 +10,7 @@ import {signIn} from '@store/redux/thunk/userThunk';
 import createStyles from './styles';
 
 const useLogin = () => {
-  const [email, setEmail] = useState('afonso.afancar@magazineaziul.com.br');
+  const [email, setEmail] = useState('pele@magazineaziul.com.br');
   const [password, setPassword] = useState('mudar123');
 
   const theme = useTheme();

@@ -37,7 +37,7 @@ const createStyles = ({theme: {colors, fonts}}: DefaultStyleParams) =>
     },
     salesList: {
       alignItems: 'center',
-      paddingBottom: 100,
+      paddingBottom: 150,
     },
     logoutButton: {
       position: 'absolute',
@@ -48,6 +48,37 @@ const createStyles = ({theme: {colors, fonts}}: DefaultStyleParams) =>
       alignItems: 'center',
       justifyContent: 'center',
       transform: [{rotate: '180deg'}],
+    },
+    itemSeparator: {
+      width: 10,
+    },
+    progressListContent: {
+      padding: 20,
+    },
+    progressListContainer: {
+      maxHeight: 150,
+    },
+    filterButton: {
+      height: 40,
+      aspectRatio: 1,
+      borderRadius: 25,
+      backgroundColor: colors.primary,
+      alignItems: 'center',
+      justifyContent: 'center',
+      alignSelf: 'flex-end',
+      marginTop: 10,
+    },
+    salesTitles: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: colors.onBackground,
+    },
+    salesHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      paddingVertical: 10,
     },
   });
 

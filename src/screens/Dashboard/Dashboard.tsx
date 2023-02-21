@@ -11,7 +11,6 @@ import {
 import CircularProgress from 'react-native-circular-progress-indicator';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import Button from '@components/Button/Button';
 import FAB from '@components/FAB/FAB';
 import FilterBottomSheet from '@components/FilterBottomSheet/FilterBottomSheet';
 import SaleCard from '@components/SaleCard/SaleCard';
@@ -35,6 +34,8 @@ const Dashboard: FC<AuthenticatedScreenProps<'Dashboard'>> = ({navigation}) => {
   } = useDashboard();
 
   const {width} = useWindowDimensions();
+
+  const itemSeparator = () => <View style={styles.itemSeparator} />;
 
   const renderHeader = () => (
     <View>
@@ -70,28 +71,23 @@ const Dashboard: FC<AuthenticatedScreenProps<'Dashboard'>> = ({navigation}) => {
               titleFontSize={12}
             />
           )}
-          contentContainerStyle={{
-            padding: 20,
-          }}
-          style={{
-            maxHeight: 150,
-          }}
-          ItemSeparatorComponent={() => (
-            <View
-              style={{
-                width: 10,
-              }}
-            />
-          )}
+          contentContainerStyle={styles.progressListContent}
+          style={styles.progressListContainer}
+          ItemSeparatorComponent={itemSeparator}
         />
       )}
 
-      <View>
-        <Button
-          label="Filtrar"
-          type="text"
+      <View style={styles.salesHeader}>
+        <Text style={styles.salesTitles}>Vendas</Text>
+        <Pressable
           onPress={() => bottomSheetRef.current?.expand()}
-        />
+          style={styles.filterButton}>
+          <Icon
+            name="filter-variant"
+            size={25}
+            color={theme.colors.onPrimary}
+          />
+        </Pressable>
       </View>
     </View>
   );
@@ -103,7 +99,7 @@ const Dashboard: FC<AuthenticatedScreenProps<'Dashboard'>> = ({navigation}) => {
           ListHeaderComponent={renderHeader}
           contentContainerStyle={styles.salesList}
           data={sales}
-          renderItem={({item}) => <SaleCard sale={item} />}
+          renderItem={({item}) => <SaleCard sale_id={item.id} />}
         />
         {isSalesman && (
           <FAB

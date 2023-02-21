@@ -1,3 +1,5 @@
+import {Q} from '@nozbe/watermelondb';
+
 import {SalesService} from '@services/sales';
 import type {FilterSalesParams} from '@services/types';
 import {isSameDayOrAfter, isSameDayOrBefore} from '@utils/date';
@@ -28,30 +30,40 @@ const WMSalesActions = {
   },
 
   async addServeSalesLocally(sales: Sale[]) {
-    database.write(async () => {
-      database.batch(
-        sales.map(sale =>
-          salesCollection.prepareCreate(newItem => {
-            newItem.sale_id = sale.sale_id;
-            newItem.sale_value = sale.sale_value;
-            newItem.salesman = sale.salesman;
-            newItem.nearest_unit = sale.nearest_unit;
-            newItem.board_salesman = sale.board_salesman;
-            newItem.latitude = sale.latitude;
-            newItem.longitude = sale.longitude;
-            newItem.roaming = sale.roaming;
-            newItem.date_of_sale = sale.date_of_sale;
-            newItem.synced = true;
-          }),
-        ),
-      );
-    });
+    database.write(async () => this.inserteMultiplesSales(sales));
+  },
+
+  async inserteMultiplesSales(sales: Sale[]) {
+    database.batch(
+      sales.map(sale =>
+        salesCollection.prepareCreate(newItem => {
+          newItem.sale_id = sale.sale_id;
+          newItem.sale_value = sale.sale_value;
+          newItem.salesman = sale.salesman;
+          newItem.nearest_unit = sale.nearest_unit;
+          newItem.board_salesman = sale.board_salesman;
+          newItem.latitude = sale.latitude;
+          newItem.longitude = sale.longitude;
+          newItem.roaming = sale.roaming;
+          newItem.date_of_sale = sale.date_of_sale;
+          newItem.synced = true;
+        }),
+      ),
+    );
   },
 
   async getSales() {
     const syncedSales = await salesCollection.query().fetch();
 
     return syncedSales;
+  },
+
+  async getNotSyncedSales() {
+    const notSyncedSales = await salesCollection
+      .query(Q.where('synced', false))
+      .fetch();
+
+    return notSyncedSales;
   },
 
   async filterSales(filterParams: FilterSalesParams) {
@@ -104,10 +116,12 @@ const WMSalesActions = {
   },
 
   async syncNotSyncedSales(notSyncedSales: SaleModel[]) {
-    await Promise.all(
-      notSyncedSales.map(async sale => {
-        const saleData = await SalesService.insertSale(sale.getServerFields());
-        await database.write(async () => {
+    database.write(async () => {
+      await Promise.all(
+        notSyncedSales.map(async sale => {
+          const saleData = await SalesService.insertSale(
+            sale.getServerFields(),
+          );
           await sale.update(saleItem => {
             saleItem.sale_id = saleData.sale_id;
             saleItem.synced = true;
@@ -118,9 +132,9 @@ const WMSalesActions = {
             saleItem.hour_of_sale = saleData.hour_of_sale;
             saleItem.salesman = saleData.salesman;
           });
-        });
-      }),
-    );
+        }),
+      );
+    });
   },
 };
 

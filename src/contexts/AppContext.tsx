@@ -4,7 +4,7 @@ import React, {createContext, useContext, useEffect, useState} from 'react';
 import NetInfo from '@react-native-community/netinfo';
 
 import {useAppDispatch, useAppSelector} from '@store/redux';
-import {initSales, syncSales} from '@store/redux/thunk/salesThunk';
+import {initSales as syncSales} from '@store/redux/thunk/salesThunk';
 import {initUser, signOut as signOutAction} from '@store/redux/thunk/userThunk';
 
 interface AuthContextProps {
@@ -38,14 +38,13 @@ const AppContextProvider: FC<PropsWithChildren> = ({children}) => {
 
   useEffect(() => {
     if (user) {
-      dispatch(initSales());
+      dispatch(syncSales());
     }
   }, [user, shouldSync, hasInternet]);
 
   useEffect(() => {
     if (!hasInternet && !shouldSync) {
       setShouldSync(true);
-      console.log('Should Sync When Online');
     }
   }, [hasInternet]);
 

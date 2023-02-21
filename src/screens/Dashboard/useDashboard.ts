@@ -1,4 +1,5 @@
 import {useEffect, useMemo, useRef, useState} from 'react';
+import type {AlertButton} from 'react-native';
 import {Alert} from 'react-native';
 
 import {useTheme} from '@react-navigation/native';
@@ -13,12 +14,19 @@ import getUnitiesDataFromSales from '@utils/sales';
 
 import createStyles from './styles';
 
+const cancelAlertButton: AlertButton = {
+  text: 'Não',
+  style: 'cancel',
+};
+
 const useDashboard = () => {
   const [sales, setSales] = useState<SaleModel[]>([]);
   const [displaySales, setDisplaySales] = useState<SaleModel[]>([]);
   const theme = useTheme();
 
-  const {salesAmount, menu} = useAppSelector(state => state.sales);
+  const {salesAmount, menu, isLoadingPush, isLoadingPull} = useAppSelector(
+    state => state.sales,
+  );
 
   const displaySalesAmount = useMemo(
     () => displaySales.reduce((acc, sale) => acc + sale.sale_value, 0),
@@ -38,18 +46,10 @@ const useDashboard = () => {
   const isSalesman = user?.profile === 'salesman';
 
   const onLogoutPress = () => {
-    Alert.alert(
-      'Sair',
-      'Deseja realmente sair?',
-      [
-        {
-          text: 'Não',
-          style: 'cancel',
-        },
-        {text: 'Sim', onPress: () => signOut()},
-      ],
-      {cancelable: false},
-    );
+    Alert.alert('Sair', 'Deseja realmente sair?', [
+      cancelAlertButton,
+      {text: 'Sim', onPress: () => signOut()},
+    ]);
   };
   const onSalesChange = (nextSales: SaleModel[]) => {
     setSales(nextSales);
@@ -90,6 +90,8 @@ const useDashboard = () => {
     salesAmount,
     displaySalesAmount,
     displayUnitiesData,
+    isLoadingPush,
+    isLoadingPull,
   };
 };
 

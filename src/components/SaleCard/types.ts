@@ -1,5 +1,5 @@
 import type {SaleModel} from '@models/Sale';
 
 export interface SaleCardProps {
-  sale: SaleModel;
+  sale_id: SaleModel['id'];
 }
