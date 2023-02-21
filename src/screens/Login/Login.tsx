@@ -1,94 +1,69 @@
-import React, {useState} from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  Button,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React from 'react';
+import {Image, Text, View} from 'react-native';
 
-import {useAppContext} from '@contexts/AppContext';
-import {useAppDispatch, useAppSelector} from '@store/redux';
-import {signIn} from '@store/redux/thunk/userThunk';
+import Button from '@components/Button/Button';
+import Input from '@components/Input/Input';
 
-import styles from './styles';
+import useLogin from './useLogin';
 
 const Login = () => {
-  const [email, setEmail] = useState('afonso.afancar@magazineaziul.com.br');
-  const [password, setPassword] = useState('mudar123');
-
-  const {hasInternet} = useAppContext();
-
-  const dispatch = useAppDispatch();
-  const {isSignInLoading} = useAppSelector(state => state.user);
-
-  const onLoginPress = () => {
-    if (!email) {
-      return Alert.alert('Please enter email');
-    }
-
-    if (!password) {
-      return Alert.alert('Please enter password');
-    }
-
-    dispatch(signIn({email, password}));
-  };
-
-  const handleDevLogin = (customEmail: string) => {
-    dispatch(signIn({email: customEmail, password}));
-  };
-
-  const loginWithGeneralManager = () =>
-    handleDevLogin('pele@magazineaziul.com.br');
-
-  const loginWithDirector = () =>
-    handleDevLogin('rogerio.ceni@magazineaziul.com.br');
-
-  const loginWithManager = () =>
-    handleDevLogin('deyverson.acosta@magazineaziul.com.br');
-
-  const loginWithSalesman = () => handleDevLogin('breno@magazineaziul.com.br');
+  const {
+    email,
+    error,
+    isLoading,
+    styles,
+    setEmail,
+    setPassword,
+    password,
+    hasInternet,
+    onLoginPress,
+  } = useLogin();
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <Image
+          source={{
+            uri: 'https://3.bp.blogspot.com/-S8HTBQqmfcs/XN0ACIRD9PI/AAAAAAAAAlk/A_3ZXg7xO4YyGrKDhMpr6YRgrtOMn9tHwCLcBGAs/s1600/f_logo_RGB-Blue_1024.png ',
+          }}
+          resizeMode="contain"
+          style={styles.logo}
+        />
+        <View style={styles.headerTextContainer}>
+          <Text style={styles.headerTitle}>Bem-Vindo ao Magazine Azil</Text>
+          <Text style={styles.headerSubtitle}>
+            A maior distribuidora do Brasil!
+          </Text>
+        </View>
+      </View>
       <View style={styles.inputsContainer}>
-        <TextInput
-          style={styles.input}
+        <Input
+          label="E-mail"
           value={email}
           onChangeText={setEmail}
           autoCapitalize="none"
           keyboardType="email-address"
           autoCorrect={false}
           autoComplete="email"
+          error={error}
         />
-        <TextInput
-          style={styles.input}
+        <Input
+          label="Senha"
           value={password}
           onChangeText={setPassword}
+          secureTextEntry
+          error={error}
         />
 
-        <TouchableOpacity
-          style={styles.button}
-          activeOpacity={0.7}
-          disabled={!hasInternet}
-          onPress={onLoginPress}>
-          {isSignInLoading ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-            <Text style={styles.buttonLabel}>
-              {hasInternet ? 'Login' : 'No Connection'}
-            </Text>
-          )}
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.DEV_BUTTON_CONTAINER}>
-        <Button title="General Manager" onPress={loginWithGeneralManager} />
-        <Button title="Director" onPress={loginWithDirector} />
-        <Button title="Manager" onPress={loginWithManager} />
-        <Button title="Salesman" onPress={loginWithSalesman} />
+        <View style={styles.buttonsContainer}>
+          <Button
+            label="Entrar"
+            onPress={onLoginPress}
+            disabled={!hasInternet}
+            isLoading={isLoading}
+          />
+          <Button label="Esqueci minha senha" type="text" />
+        </View>
       </View>
     </View>
   );
