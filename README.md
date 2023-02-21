@@ -14,7 +14,7 @@ Para unir todas as chamadas e gerenciar as regras de negócio, utilizamos o Redu
 * Yarn (Recomendado)
 
 ## Instalação
-Antes de começar, certifique-se de que você tem o Node.js e o React Native instalados na sua máquina. Caso ainda não tenha, siga as instruções na documentação oficial do Node.js e do React Native.
+Antes de começar, certifique-se de que você tem o Node.js e o React Native instalados na sua máquina. Caso ainda não tenha, siga as instruções na documentação oficial do [Node.js](https://nodejs.org/en/) e do [React Native](https://reactnative.dev/docs/environment-setup).
 
 Faça o download do repositório
 Navegue até a pasta raiz do projeto no seu terminal
