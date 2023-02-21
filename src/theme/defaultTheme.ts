@@ -44,6 +44,10 @@ const defaultTheme = {
     onSurfaceDisabled: 'rgba(27, 27, 31, 0.38)',
     backdrop: 'rgba(47, 48, 56, 0.4)',
   },
+  fonts: {
+    bold: 'Jaldi-Bold',
+    regular: 'Jaldi-Regular',
+  },
 };
 
 export type AppTheme = typeof defaultTheme & Theme;
