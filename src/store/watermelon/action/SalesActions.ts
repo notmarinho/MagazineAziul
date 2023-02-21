@@ -1,5 +1,6 @@
 import {SalesService} from '@services/sales';
 import type {FilterSalesParams} from '@services/types';
+import {isSameDayOrAfter, isSameDayOrBefore} from '@utils/date';
 
 import type {SaleModel} from '../../../models/Sale';
 import type Sale from '../../../models/Sale';
@@ -70,6 +71,18 @@ const WMSalesActions = {
     if (filterParams.unit) {
       filteredSales = filteredSales.filter(
         sale => sale.nearest_unit === filterParams.unit,
+      );
+    }
+
+    if (filterParams.start_date) {
+      filteredSales = filteredSales.filter(sale =>
+        isSameDayOrAfter(sale.getDate(), filterParams.start_date!),
+      );
+    }
+
+    if (filterParams.end_date) {
+      filteredSales = filteredSales.filter(sale =>
+        isSameDayOrBefore(sale.getDate(), filterParams.end_date!),
       );
     }
     return filteredSales;
