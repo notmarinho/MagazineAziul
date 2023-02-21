@@ -8,9 +8,12 @@ import type Sale from '@models/Sale';
 import {SalesService} from '@services/sales';
 import WMSalesActions from '@store/watermelon/action/SalesActions';
 
+import {format} from 'date-fns';
+
 const useInsertSale = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [saleValue, setSaleValue] = useState('');
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   const {
     currentUserPosition,
@@ -48,6 +51,7 @@ const useInsertSale = () => {
         latitude: String(currentUserPosition!.coords.latitude),
         longitude: String(currentUserPosition!.coords.longitude),
         sale_value: Number(saleValue),
+        date_of_sale: format(new Date(), 'yyyy-MM-dd'),
       });
     } else {
       WMSalesActions.addSale(sale);
@@ -59,6 +63,7 @@ const useInsertSale = () => {
       latitude: String(currentUserPosition!.coords.latitude),
       longitude: String(currentUserPosition!.coords.longitude),
       sale_value: saleValue,
+      date_of_sale: format(selectedDate, 'yyyy-MM-dd'),
     })
       .then(addToLocalDB)
       .catch(() => {
@@ -71,6 +76,8 @@ const useInsertSale = () => {
     hasUserPosition,
     onSaleValueChange,
     handleAddSale,
+    setSelectedDate,
+    selectedDate,
   };
 };
 
