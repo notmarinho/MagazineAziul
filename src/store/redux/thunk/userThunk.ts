@@ -5,13 +5,15 @@ import {AuthService} from '@services/auth';
 import {Storage} from '@store/storage';
 import WMSalesActions from '@store/watermelon/action/SalesActions';
 
+import errorMessage from '../../../utils/errorMessage';
+
 export const initUser = createAsyncThunk(
   'user/init',
   async (_, {rejectWithValue, dispatch}) => {
     try {
       await dispatch(checkSignedUser());
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(errorMessage(error));
     }
   },
 );
@@ -38,7 +40,7 @@ export const checkSignedUser = createAsyncThunk(
 
       return userData;
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(errorMessage(error));
     }
   },
 );
@@ -56,7 +58,7 @@ export const signIn = createAsyncThunk(
 
       await dispatch(checkSignedUser());
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(errorMessage(error));
     }
   },
 );
@@ -69,7 +71,7 @@ export const signOut = createAsyncThunk(
       Storage.removeSalesData();
       Storage.removeToken();
     } catch (error) {
-      return rejectWithValue(error);
+      return rejectWithValue(errorMessage(error));
     }
   },
 );

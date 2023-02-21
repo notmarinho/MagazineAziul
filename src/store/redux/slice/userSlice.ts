@@ -31,6 +31,13 @@ const userSlice = createSlice({
     addCase(signIn.pending, state => {
       state.isSignInLoading = true;
     });
+    addCase(signIn.rejected, state => {
+      state.isSignInLoading = false;
+      state.error = 'Email ou senha inválidos';
+    });
+    addCase(signIn.fulfilled, (state, action) => {
+      state.error = null;
+    });
     addCase(checkSignedUser.fulfilled, (state, action) => {
       state.user = action.payload;
       state.isSignInLoading = false;
