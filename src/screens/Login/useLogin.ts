@@ -6,14 +6,14 @@ import {useTheme} from '@react-navigation/native';
 import {useAppContext} from '@contexts/AppContext';
 import {useAppDispatch, useAppSelector} from '@store/redux';
 import {signIn} from '@store/redux/thunk/userThunk';
+import type {AppTheme} from '@theme/defaultTheme';
 
 import createStyles from './styles';
 
-const useLogin = () => {
+const useLogin = (theme: AppTheme) => {
   const [email, setEmail] = useState('pele@magazineaziul.com.br');
   const [password, setPassword] = useState('mudar123');
 
-  const theme = useTheme();
   const styles = createStyles({theme});
   const {hasInternet} = useAppContext();
 

@@ -1,3 +1,4 @@
+import type {FC} from 'react';
 import React from 'react';
 import {useColorScheme} from 'react-native';
 
@@ -7,6 +8,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SplashScreen from '@screens/Splash/SplashScreen';
 import {useAppSelector} from '@store/redux';
 import darkTheme from '@theme/darkTheme';
+import type {AppTheme} from '@theme/defaultTheme';
 import defaultTheme from '@theme/defaultTheme';
 
 import AuthenticatedStackNavigator from './AuthenticatedStack';
@@ -43,5 +45,9 @@ const Navigator = () => {
     </NavigationContainer>
   );
 };
+
+export const withTheme =
+  (Component: FC<any>, theme: AppTheme) => (props: any) =>
+    <Component {...props} theme={theme} />;
 
 export default Navigator;

@@ -10,12 +10,17 @@ import {useAppSelector} from '@store/redux';
 import type {UnityCoordsLocation} from '../../constants/unitiesLocations';
 import unitiesLocations from '../../constants/unitiesLocations';
 
-const SalesMap: FC<AuthenticatedScreenProps<'SalesMap'>> = ({navigation}) => {
+const SalesMap: FC<AuthenticatedScreenProps<'SalesMap'>> = ({
+  navigation,
+  theme,
+}) => {
   const {
     unitiesSalesData,
     salesAmount: totalSales,
     menu,
   } = useAppSelector(state => state.sales);
+
+  console.log('Theme on maps: ', theme?.fonts?.regular);
 
   const mapRef = useRef<MapView>(null);
 

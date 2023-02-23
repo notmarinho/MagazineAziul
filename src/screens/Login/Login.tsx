@@ -1,12 +1,14 @@
+import type {FC} from 'react';
 import React from 'react';
 import {Image, Text, View} from 'react-native';
 
 import Button from '@components/Button/Button';
 import Input from '@components/Input/Input';
+import type {NonAuthenticatedScreenProps} from '@navigation/types';
 
 import useLogin from './useLogin';
 
-const Login = () => {
+const Login: FC<NonAuthenticatedScreenProps<'Login'>> = ({theme}) => {
   const {
     email,
     error,
@@ -17,7 +19,7 @@ const Login = () => {
     password,
     hasInternet,
     onLoginPress,
-  } = useLogin();
+  } = useLogin(theme);
 
   return (
     <View style={styles.container}>
